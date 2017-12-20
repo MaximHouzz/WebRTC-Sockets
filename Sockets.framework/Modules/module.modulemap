@@ -1,0 +1,11 @@
+framework module Sockets {
+  umbrella header "Sockets.h"
+
+  export *
+  module * { export * }
+}
+
+module Sockets.Swift {
+    header "Sockets-Swift.h"
+    requires objc
+}
