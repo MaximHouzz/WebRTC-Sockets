@@ -185,6 +185,67 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #pragma clang diagnostic ignored "-Wnullability"
 
 SWIFT_MODULE_NAMESPACE_PUSH("Sockets")
+@protocol LiveDesignRepresentativeClaimedSessionSocketProtocol;
+@class Session;
+enum SocketServiceReason : NSInteger;
+
+SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketDelegate_")
+@protocol LiveDesignRepresentativeClaimedSessionSocketDelegate
+@optional
+- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didSetSketchWith:(NSString * _Nonnull)sketchID galleryID:(NSString * _Nonnull)galleryID;
+- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didRequestRefreshForSession:(Session * _Nonnull)session;
+- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket wasClosedDueTo:(enum SocketServiceReason)reason;
+- (void)liveDesignRepresentativeClaimedSocketDidReceiveCall:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket;
+- (void)liveDesignRepresentativeClaimedSocketDidDisconnectCall:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket;
+@end
+
+
+SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketProtocol_")
+@protocol LiveDesignRepresentativeClaimedSessionSocketProtocol
+@property (nonatomic, strong) id <LiveDesignRepresentativeClaimedSessionSocketDelegate> _Nullable delegate;
+/// Session that is currently handled by socket.
+@property (nonatomic, readonly, strong) Session * _Nonnull session;
+/// Called when the rep pressed “AddToCart” button in the uiu
+- (void)invokeAddToCart;
+/// Make a VOIP call to the user.
+- (void)makeCall;
+/// Should be called when the rep saves the sketch.
+- (void)refresh;
+/// Hangup
+- (void)close;
+@end
+
+@protocol LiveDesignUserSocketProtocol;
+
+SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketDelegate_")
+@protocol LiveDesignUserSocketDelegate
+@optional
+- (void)liveDesignUserSocketDidRequestAddAllToCart:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
+- (void)liveDesignUserSocketDidRequestRefresh:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
+- (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClaimedByRepresentative:(NSString * _Nullable)representative;
+- (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClosedDueTo:(enum SocketServiceReason)reason;
+- (void)liveDesignUserSocketDidReceiveCall:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
+- (void)liveDesignUserSocketDidDisconnectCall:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
+@end
+
+
+SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketProtocol_")
+@protocol LiveDesignUserSocketProtocol
+@property (nonatomic, strong) id <LiveDesignUserSocketDelegate> _Nullable delegate;
+/// Session that is currently handled by socket.
+@property (nonatomic, readonly, strong) Session * _Nullable session;
+/// Register the user to the livedesign queue.
+- (void)registerWith:(NSString * _Nonnull)username completion:(void (^ _Nonnull)(Session * _Nullable))completion;
+/// Call when the user app makes the first setSketch and receives sketchId.
+- (void)setSketchWithSketchID:(NSString * _Nonnull)sketchID galleryID:(NSString * _Nonnull)galleryID;
+/// Call when the user takes another photo.
+- (void)refresh;
+/// Make a VOIP call to the representative.
+- (void)makeCall;
+/// Hangup.
+- (void)close;
+@end
+
 
 SWIFT_CLASS("_TtC7Sockets7Session")
 @interface Session : NSObject
@@ -198,6 +259,11 @@ SWIFT_CLASS("_TtC7Sockets13SocketService")
 @interface SocketService : NSObject
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
+
+typedef SWIFT_ENUM(NSInteger, SocketServiceReason) {
+  SocketServiceReasonRequest = 0,
+  SocketServiceReasonDisconnect = 1,
+};
 
 SWIFT_MODULE_NAMESPACE_POP
 #pragma clang diagnostic pop
