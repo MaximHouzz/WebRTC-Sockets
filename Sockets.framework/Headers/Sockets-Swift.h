@@ -273,5 +273,11 @@ typedef SWIFT_ENUM(NSInteger, SocketServiceReason) {
   SocketServiceReasonDisconnect = 1,
 };
 
+
+SWIFT_CLASS("_TtC7Sockets4User")
+@interface User : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
 SWIFT_MODULE_NAMESPACE_POP
 #pragma clang diagnostic pop
