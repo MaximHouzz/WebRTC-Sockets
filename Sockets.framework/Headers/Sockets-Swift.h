@@ -193,14 +193,14 @@ SWIFT_PROTOCOL("_TtP7Sockets4Call_")
 @end
 
 @protocol LiveDesignRepresentativeClaimedSessionSocketProtocol;
-@class Session;
+@class LiveDesignSession;
 enum SocketServiceReason : NSInteger;
 
 SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketDelegate_")
 @protocol LiveDesignRepresentativeClaimedSessionSocketDelegate
 @optional
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didSetSketchWith:(NSString * _Nonnull)sketchID galleryID:(NSString * _Nonnull)galleryID;
-- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didRequestRefreshForSession:(Session * _Nonnull)session;
+- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didRequestRefreshForSession:(LiveDesignSession * _Nonnull)session;
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket wasClosedDueTo:(enum SocketServiceReason)reason;
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didReceiveCall:(id <Call> _Nonnull)call;
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didDisconnectCall:(id <Call> _Nonnull)call;
@@ -211,7 +211,7 @@ SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketProtoc
 @protocol LiveDesignRepresentativeClaimedSessionSocketProtocol
 @property (nonatomic, strong) id <LiveDesignRepresentativeClaimedSessionSocketDelegate> _Nullable delegate;
 /// Session that is currently handled by socket.
-@property (nonatomic, readonly, strong) Session * _Nonnull session;
+@property (nonatomic, readonly, strong) LiveDesignSession * _Nonnull session;
 /// Called when the rep pressed “AddToCart” button in the uiu
 - (void)invokeAddToCart;
 /// Make a VOIP call to the user.
@@ -222,15 +222,26 @@ SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketProtoc
 - (void)close;
 @end
 
+
+SWIFT_CLASS("_TtC7Sockets17LiveDesignSession")
+@interface LiveDesignSession : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC7Sockets14LiveDesignUser")
+@interface LiveDesignUser : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
 @protocol LiveDesignUserSocketProtocol;
-@class User;
 
 SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketDelegate_")
 @protocol LiveDesignUserSocketDelegate
 @optional
 - (void)liveDesignUserSocketDidRequestAddAllToCart:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
 - (void)liveDesignUserSocketDidRequestRefresh:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
-- (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClaimedByRepresentative:(User * _Nonnull)representative;
+- (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClaimedByRepresentative:(LiveDesignUser * _Nonnull)representative;
 - (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClosedDueTo:(enum SocketServiceReason)reason;
 - (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket didReceiveCall:(id <Call> _Nonnull)call;
 - (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket didDisconnectCall:(id <Call> _Nonnull)call;
@@ -241,9 +252,9 @@ SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketProtocol_")
 @protocol LiveDesignUserSocketProtocol
 @property (nonatomic, strong) id <LiveDesignUserSocketDelegate> _Nullable delegate;
 /// Session that is currently handled by socket.
-@property (nonatomic, readonly, strong) Session * _Nullable session;
+@property (nonatomic, readonly, strong) LiveDesignSession * _Nullable session;
 /// Register the user to the livedesign queue.
-- (void)registerWith:(User * _Nonnull)user completion:(void (^ _Nonnull)(Session * _Nullable))completion;
+- (void)registerWith:(LiveDesignUser * _Nonnull)user completion:(void (^ _Nonnull)(LiveDesignSession * _Nullable))completion;
 /// Call when the user app makes the first setSketch and receives sketchId.
 - (void)setSketchWithSketchID:(NSString * _Nonnull)sketchID galleryID:(NSString * _Nonnull)galleryID;
 /// Call when the user takes another photo.
@@ -252,12 +263,6 @@ SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketProtocol_")
 - (void)makeCallWithCompletion:(void (^ _Nonnull)(id <Call> _Nullable))completion;
 /// Hangup.
 - (void)close;
-@end
-
-
-SWIFT_CLASS("_TtC7Sockets7Session")
-@interface Session : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
 
@@ -272,12 +277,6 @@ typedef SWIFT_ENUM(NSInteger, SocketServiceReason) {
   SocketServiceReasonRequest = 0,
   SocketServiceReasonDisconnect = 1,
 };
-
-
-SWIFT_CLASS("_TtC7Sockets4User")
-@interface User : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-@end
 
 SWIFT_MODULE_NAMESPACE_POP
 #pragma clang diagnostic pop
