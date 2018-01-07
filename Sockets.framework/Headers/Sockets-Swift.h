@@ -186,15 +186,70 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #pragma clang diagnostic ignored "-Wnullability"
 
 SWIFT_MODULE_NAMESPACE_PUSH("Sockets")
+enum CallState : NSInteger;
+@class LiveDesignUser;
 
-SWIFT_PROTOCOL("_TtP7Sockets14LiveDesignCall_")
-@protocol LiveDesignCall
-/// UUID of call.
+SWIFT_PROTOCOL("_TtP7Sockets4Call_")
+@protocol Call
+/// State of call.
+@property (nonatomic, readonly) enum CallState state;
+/// Called when call state is changed.
+@property (nonatomic, copy) void (^ _Nullable stateChanged)(void);
+/// Identifier of call.
 @property (nonatomic, readonly, copy) NSUUID * _Nonnull uuid;
 /// Whether the call is muted or not.
 @property (nonatomic) BOOL muted;
-/// Disconnects call.
+/// User who initiated the call.
+@property (nonatomic, readonly, strong) LiveDesignUser * _Nonnull contact;
+/// Ends call.
+- (void)end;
+@end
+
+@protocol CallServiceDelegate;
+enum CallServiceState : NSInteger;
+
+SWIFT_PROTOCOL("_TtP7Sockets11CallService_")
+@protocol CallService
+@property (nonatomic, strong) id <CallServiceDelegate> _Nullable delegate;
+/// Current state of call service.
+@property (nonatomic, readonly) enum CallServiceState state;
+/// Make a VOIP call.
+- (id <Call> _Nullable)callToIdentifier:(NSString * _Nonnull)identifier SWIFT_WARN_UNUSED_RESULT;
+/// Currently active calls.
+- (NSArray<id <Call>> * _Nonnull)activeCalls SWIFT_WARN_UNUSED_RESULT;
+/// Disconnects the service.
 - (void)disconnect;
+@end
+
+
+SWIFT_PROTOCOL("_TtP7Sockets19CallServiceDelegate_")
+@protocol CallServiceDelegate
+@optional
+- (void)callService:(id <CallService> _Nonnull)service didChangeState:(enum CallServiceState)state;
+- (void)callService:(id <CallService> _Nonnull)service didReceiveCall:(id <Call> _Nonnull)call;
+- (void)callService:(id <CallService> _Nonnull)service didDisconnectCall:(id <Call> _Nonnull)call;
+@end
+
+typedef SWIFT_ENUM(NSInteger, CallServiceState) {
+  CallServiceStateOnline = 0,
+  CallServiceStateOffline = 1,
+  CallServiceStateConnecting = 2,
+};
+
+typedef SWIFT_ENUM(NSInteger, CallState) {
+  CallStateConnecting = 0,
+  CallStateActive = 1,
+  CallStateMuted = 2,
+  CallStateEnded = 3,
+};
+
+
+SWIFT_PROTOCOL("_TtP7Sockets23ConfigurableCallService_")
+@protocol ConfigurableCallService <CallService>
+/// Starts the service for a given caller id and contact user
+- (void)startWithIdentifier:(NSString * _Nonnull)identifier;
+/// Registers a user to an identifier that is used to call that user.
+- (void)associateWithIdentifier:(NSString * _Nonnull)identifier withUser:(LiveDesignUser * _Nonnull)user;
 @end
 
 @protocol LiveDesignRepresentativeClaimedSessionSocketProtocol;
@@ -207,8 +262,6 @@ SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketDelega
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didSetSketchWith:(NSString * _Nonnull)sketchID galleryID:(NSString * _Nonnull)galleryID;
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didRequestRefreshForSession:(LiveDesignSession * _Nonnull)session;
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket wasClosedDueTo:(enum SocketServiceReason)reason;
-- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didReceiveCall:(id <LiveDesignCall> _Nonnull)call;
-- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didDisconnectCall:(id <LiveDesignCall> _Nonnull)call;
 @end
 
 
@@ -219,8 +272,6 @@ SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketProtoc
 @property (nonatomic, readonly, strong) LiveDesignSession * _Nonnull session;
 /// Called when the rep pressed “AddToCart” button in the uiu
 - (void)invokeAddToCart;
-/// Make a VOIP call to the user.
-- (void)makeCallWithCompletion:(void (^ _Nonnull)(id <LiveDesignCall> _Nullable))completion;
 /// Should be called when the rep saves the sketch.
 - (void)refresh;
 /// Hangup
@@ -248,8 +299,6 @@ SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketDelegate_")
 - (void)liveDesignUserSocketDidRequestRefresh:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
 - (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClaimedByRepresentative:(LiveDesignUser * _Nonnull)representative;
 - (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClosedDueTo:(enum SocketServiceReason)reason;
-- (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket didReceiveCall:(id <LiveDesignCall> _Nonnull)call;
-- (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket didDisconnectCall:(id <LiveDesignCall> _Nonnull)call;
 @end
 
 
@@ -264,8 +313,6 @@ SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketProtocol_")
 - (void)setSketchWithSketchID:(NSString * _Nonnull)sketchID galleryID:(NSString * _Nonnull)galleryID;
 /// Call when the user takes another photo.
 - (void)refresh;
-/// Make a VOIP call to the representative.
-- (void)makeCallWithCompletion:(void (^ _Nonnull)(id <LiveDesignCall> _Nullable))completion;
 /// Hangup.
 - (void)close;
 @end

@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 
 @interface Peer : NSObject
-@property (nonatomic, strong, readonly) NSUUID *uuid;
+@property (nonatomic, strong) NSUUID *uuid;
+@property (nonatomic, readonly) NSString *identifier;
 
 - (void)disconnect;
 
