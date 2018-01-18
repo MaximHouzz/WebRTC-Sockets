@@ -227,7 +227,7 @@ SWIFT_PROTOCOL("_TtP7Sockets19CallServiceDelegate_")
 @optional
 - (void)callService:(id <CallService> _Nonnull)service didChangeState:(enum CallServiceState)state;
 - (void)callService:(id <CallService> _Nonnull)service didReceiveCall:(id <Call> _Nonnull)call;
-- (void)callService:(id <CallService> _Nonnull)service didDisconnectCall:(id <Call> _Nonnull)call;
+- (void)callService:(id <CallService> _Nonnull)service didDisconnectCall:(id <Call> _Nullable)call;
 @end
 
 typedef SWIFT_ENUM(NSInteger, CallServiceState) {
