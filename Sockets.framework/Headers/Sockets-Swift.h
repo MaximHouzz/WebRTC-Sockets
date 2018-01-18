@@ -172,7 +172,6 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 # define SWIFT_DEPRECATED_OBJC(Msg) SWIFT_DEPRECATED_MSG(Msg)
 #endif
 #if __has_feature(modules)
-@import Foundation;
 @import ObjectiveC;
 @import SocketIO;
 #endif
@@ -186,72 +185,6 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #pragma clang diagnostic ignored "-Wnullability"
 
 SWIFT_MODULE_NAMESPACE_PUSH("Sockets")
-enum CallState : NSInteger;
-@class LiveDesignUser;
-
-SWIFT_PROTOCOL("_TtP7Sockets4Call_")
-@protocol Call
-/// State of call.
-@property (nonatomic, readonly) enum CallState state;
-/// Called when call state is changed.
-@property (nonatomic, copy) void (^ _Nullable stateChanged)(void);
-/// Identifier of call.
-@property (nonatomic, readonly, copy) NSUUID * _Nonnull uuid;
-/// Whether the call is muted or not.
-@property (nonatomic) BOOL muted;
-/// User who initiated the call.
-@property (nonatomic, readonly, strong) LiveDesignUser * _Nonnull contact;
-/// Ends call.
-- (void)end;
-@end
-
-@protocol CallServiceDelegate;
-enum CallServiceState : NSInteger;
-
-SWIFT_PROTOCOL("_TtP7Sockets11CallService_")
-@protocol CallService
-@property (nonatomic, strong) id <CallServiceDelegate> _Nullable delegate;
-/// Current state of call service.
-@property (nonatomic, readonly) enum CallServiceState state;
-/// Make a VOIP call.
-- (id <Call> _Nullable)callToIdentifier:(NSString * _Nonnull)identifier SWIFT_WARN_UNUSED_RESULT;
-/// Currently active calls.
-- (NSArray<id <Call>> * _Nonnull)activeCalls SWIFT_WARN_UNUSED_RESULT;
-/// Disconnects the service.
-- (void)disconnect;
-@end
-
-
-SWIFT_PROTOCOL("_TtP7Sockets19CallServiceDelegate_")
-@protocol CallServiceDelegate
-@optional
-- (void)callService:(id <CallService> _Nonnull)service didChangeState:(enum CallServiceState)state;
-- (void)callService:(id <CallService> _Nonnull)service didReceiveCall:(id <Call> _Nonnull)call;
-- (void)callService:(id <CallService> _Nonnull)service didDisconnectCall:(id <Call> _Nonnull)call;
-@end
-
-typedef SWIFT_ENUM(NSInteger, CallServiceState) {
-  CallServiceStateOnline = 0,
-  CallServiceStateOffline = 1,
-  CallServiceStateConnecting = 2,
-};
-
-typedef SWIFT_ENUM(NSInteger, CallState) {
-  CallStateConnecting = 0,
-  CallStateActive = 1,
-  CallStateMuted = 2,
-  CallStateEnded = 3,
-};
-
-
-SWIFT_PROTOCOL("_TtP7Sockets23ConfigurableCallService_")
-@protocol ConfigurableCallService <CallService>
-/// Starts the service for a given caller id and contact user
-- (void)startWithIdentifier:(NSString * _Nonnull)identifier;
-/// Registers a user to an identifier that is used to call that user.
-- (void)associateWithIdentifier:(NSString * _Nonnull)identifier withUser:(LiveDesignUser * _Nonnull)user;
-@end
-
 @protocol LiveDesignRepresentativeClaimedSessionSocketProtocol;
 @class LiveDesignSession;
 enum SocketServiceReason : NSInteger;
