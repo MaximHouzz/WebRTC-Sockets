@@ -259,7 +259,7 @@ enum SocketServiceReason : NSInteger;
 SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketDelegate_")
 @protocol LiveDesignRepresentativeClaimedSessionSocketDelegate
 @optional
-- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didSetSketchWith:(NSString * _Nonnull)sketchID galleryID:(NSString * _Nonnull)galleryID;
+- (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didSetSketchWith:(LiveDesignSession * _Nonnull)session;
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket didRequestRefreshForSession:(LiveDesignSession * _Nonnull)session;
 - (void)liveDesignRepresentativeClaimedSocket:(id <LiveDesignRepresentativeClaimedSessionSocketProtocol> _Nonnull)socket wasClosedDueTo:(enum SocketServiceReason)reason;
 @end
@@ -271,9 +271,9 @@ SWIFT_PROTOCOL("_TtP7Sockets52LiveDesignRepresentativeClaimedSessionSocketProtoc
 /// Session that is currently handled by socket.
 @property (nonatomic, readonly, strong) LiveDesignSession * _Nonnull session;
 /// Called when the rep pressed “AddToCart” button in the uiu
-- (void)invokeAddToCart;
+- (void)invokeAddToCartWith:(LiveDesignSession * _Nullable)session;
 /// Should be called when the rep saves the sketch.
-- (void)refresh;
+- (void)refreshWith:(LiveDesignSession * _Nullable)session;
 /// Hangup
 - (void)close;
 @end
@@ -283,6 +283,8 @@ SWIFT_CLASS("_TtC7Sockets17LiveDesignSession")
 @interface LiveDesignSession : NSObject
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
+
+
 
 
 SWIFT_CLASS("_TtC7Sockets14LiveDesignUser")
@@ -295,9 +297,9 @@ SWIFT_CLASS("_TtC7Sockets14LiveDesignUser")
 SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketDelegate_")
 @protocol LiveDesignUserSocketDelegate
 @optional
-- (void)liveDesignUserSocketDidRequestAddAllToCart:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
-- (void)liveDesignUserSocketDidRequestRefresh:(id <LiveDesignUserSocketProtocol> _Nonnull)socket;
-- (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClaimedByRepresentative:(LiveDesignUser * _Nonnull)representative;
+- (void)liveDesignUserSocketDidRequestAddAllToCart:(id <LiveDesignUserSocketProtocol> _Nonnull)socket with:(LiveDesignSession * _Nonnull)session;
+- (void)liveDesignUserSocketDidRequestRefresh:(id <LiveDesignUserSocketProtocol> _Nonnull)socket with:(LiveDesignSession * _Nonnull)session;
+- (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClaimedByRepresentativeWith:(LiveDesignSession * _Nonnull)session;
 - (void)liveDesignUserSocket:(id <LiveDesignUserSocketProtocol> _Nonnull)socket wasClosedDueTo:(enum SocketServiceReason)reason;
 @end
 
@@ -308,11 +310,11 @@ SWIFT_PROTOCOL("_TtP7Sockets28LiveDesignUserSocketProtocol_")
 /// Session that is currently handled by socket.
 @property (nonatomic, readonly, strong) LiveDesignSession * _Nullable session;
 /// Register the user to the livedesign queue.
-- (void)registerWith:(LiveDesignUser * _Nonnull)user completion:(void (^ _Nonnull)(LiveDesignSession * _Nullable))completion;
+- (void)registerWith:(LiveDesignUser * _Nonnull)user productID:(NSString * _Nonnull)productID completion:(void (^ _Nonnull)(LiveDesignSession * _Nullable))completion;
 /// Call when the user app makes the first setSketch and receives sketchId.
-- (void)setSketchWithSketchID:(NSString * _Nonnull)sketchID galleryID:(NSString * _Nonnull)galleryID;
+- (void)setSketchWith:(LiveDesignSession * _Nonnull)session;
 /// Call when the user takes another photo.
-- (void)refresh;
+- (void)refreshWith:(LiveDesignSession * _Nullable)session;
 /// Hangup.
 - (void)close;
 @end
